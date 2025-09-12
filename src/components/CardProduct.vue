@@ -1,6 +1,7 @@
 <template>
     <div class="card h-100">
-    <img :src="producto.imagen" class="card-img-top" :alt="producto.nombre">
+    <img :src="obtenerImagen(producto)" class="card-img-top" :alt="producto.nombre">
+
     <div class="card-body">
         <h5 class="card-title">{{producto.nombre}}</h5>
         <p class="card-text">{{producto.descripcion}}</p>
@@ -37,7 +38,7 @@ export default {
     },
     data() {
         return {
-            cantidad:0
+            cantidad:1
         }
     },
     methods: {
@@ -55,14 +56,28 @@ export default {
             }
         },
         agregaCarrito() {
-            if(this.cantidad >0) {
+            if(this.cantidad >0 && this.cantidad <= this.producto.stock) {
                 this.$emit('agregar-al-carrito', {
-                    id: this.producto.id,
                     cantidad: this.cantidad,
                     producto: this.producto
                 });
-                this.cantidad = 0;
+                this.cantidad = 1;
             }
+        },
+        obtenerImagen(producto) {
+            const corregirRutaImagen = (rutaOriginal) => {
+                if(rutaOriginal.startsWith('http://') || rutaOriginal.startsWith('https://')) {
+                    return rutaOriginal;
+                }
+                if (rutaOriginal.includes('assets/')) {
+                    return rutaOriginal.replace('assets/images/', '');
+                }
+                if(rutaOriginal.startsWith('./')) {
+                    return rutaOriginal.replace('./assets/images/', '')
+                }
+                return rutaOriginal
+            }
+            return corregirRutaImagen(producto.imagen)
         }
     }
 }
