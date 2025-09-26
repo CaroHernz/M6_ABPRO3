@@ -1,5 +1,6 @@
 <template>
-    <section class="product-section py-5">
+    <div>
+        <section class="product-section py-5">
         <div class="container">
             <h2 class="text-center mb-5">Catálogo de Productos</h2>
 
@@ -45,84 +46,115 @@
             </div>
         </div>
     </section>
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" ref="toastElement">
+            <div class="toast-header">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                <strong class="me-auto">Carrito</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                {{ mensajeToast }}
+            </div>
+        </div>
+    </div>
+    </div>
 </template>
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useCartStore } from '../stores/CartStore'
 import CardProduct from '../components/CardProduct.vue'
+import { Toast } from 'bootstrap'
 
-export default {
-    name:'ProductPage',
-    components: {
-        CardProduct
-    },
-    data() {
-        return {
-            busqueda:'',
-            categoriaFiltro:'',
-            productos: [],
-            cargando: true,
-            error:null,
-            apiUrl: 'http://localhost:3000/api/productos'
+const cartStore = useCartStore()
+
+const busqueda = ref('')
+const categoriaFiltro = ref('')
+const productos = ref([])
+const cargando = ref(true)
+const error = ref(null)
+const mensajeToast = ref('')
+const toastElement = ref(null)
+let toastInstance = null
+
+const apiUrl = 'http://localhost:3000/api/productos'
+
+const categoriasUnicas = computed(() => {
+    return [...new Set(productos.value.map(p => p.categoria))]
+})
+
+const productosFiltrados = computed(() => {
+    let filtrados = productos.value
+    
+    if (busqueda.value) {
+        const busquedaLower = busqueda.value.toLowerCase()
+        filtrados = filtrados.filter(producto => 
+            producto.nombre.toLowerCase().includes(busquedaLower) || 
+            producto.descripcion.toLowerCase().includes(busquedaLower)
+        )
+    }
+    
+    if (categoriaFiltro.value) {
+        filtrados = filtrados.filter(producto => producto.categoria === categoriaFiltro.value)
+    }
+    
+    return filtrados
+})
+
+const cargarProductos = async () => {
+    cargando.value = true
+    error.value = null
+    
+    try {
+        const response = await fetch(apiUrl)
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`)
         }
-    },
-    computed: {
-        categoriasUnicas(){
-            return [...new Set(this.productos.map(p=>p.categoria))]
-        },
-        productosFiltrados() {
-            let filtrados = this.productos;
-            if (this.busqueda) {
-                const busquedaLower = this.busqueda.toLowerCase();
-                filtrados = filtrados.filter(producto => 
-                    producto.nombre.toLowerCase().includes(busquedaLower) || producto.descripcion.toLowerCase().includes(busquedaLower)
-                )
-            }
-            if (this.categoriaFiltro) {
-                filtrados = filtrados.filter(producto => producto.categoria === this.categoriaFiltro)
-            }
-            return filtrados
-        }
-    },
-    methods: {
-        async cargarProductos(){
-            this.cargando = true;
-            this.error = null;
-            this.apiStatus = "Conectando con la API..."
-
-            try {
-                const response = await fetch(this.apiUrl);
-                if(!response.ok) {
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
-                const data = await response.json();
-                this.productos = data;                
-            } catch (err) {
-                console.error("Error fetching products:", err);
-                this.error = err.message;
-                this.apiStatus = "Error de conexión. Mostrando datos de demostración.";            
-            } finally {
-                this.cargando = false
-            }
-        },
-        agregarCarrito(item) {
-            console.log('producto agregado: ', item);
-            this.$emit('agregar-al-carrito',item);
-
-            const alertDiv = document.createElement('div');
-            alertDiv.className='alert alert-success position-fixed top-0 end-0 m-3';
-            alertDiv.style.zIndex = '1050';
-            alertDiv.innerHTML = `
-                <i class="fas fa-check-circle me-2"></i>
-                <strong>¡${item.cantidad} ${item.producto.nombre} agregado(s) al carrito!</strong>
-            `;
-            document.body.appendChild(alertDiv);
-
-            setTimeout(() => {
-                alertDiv.remove()
-            }, 3000)
-        }
-    },
-    mounted() {
-        this.cargarProductos();
+        const data = await response.json()
+        productos.value = data
+        cartStore.setProductos(data)
+        cartStore.cargarStocks() 
+    } catch (err) {
+        console.error("Error fetching products:", err)
+        error.value = err.message
+    } finally {
+        cargando.value = false
     }
 }
+
+const manejarAgregarCarrito = async (evento) => {
+    try {
+        const { producto, cantidad } = evento
+        await cartStore.agregarAlCarrito(producto, cantidad)
+        mostrarNotificacion(`¡${cantidad} ${producto.nombre} agregado(s) al carrito!`)
+        
+    } catch (error) {
+        mostrarNotificacion(error.message, 'error')
+    }
+}
+
+const mostrarNotificacion = (mensaje, tipo = 'success') => {
+    mensajeToast.value = mensaje
+    const toast = toastElement.value
+    if (toast) {
+        const headerIcon = toast.querySelector('.toast-header i')
+        if (tipo === 'error') {
+            headerIcon.className = 'fas fa-exclamation-circle text-danger me-2'
+        } else {
+            headerIcon.className = 'fas fa-check-circle text-success me-2'
+        }
+        
+        if (!toastInstance) {
+            toastInstance = new Toast(toast)
+        }
+        toastInstance.show()
+    }
+}
+
+onMounted(() => {
+    cargarProductos()
+        if (toastElement.value) {
+        toastInstance = new Toast(toastElement.value)
+    }
+})
 </script>
