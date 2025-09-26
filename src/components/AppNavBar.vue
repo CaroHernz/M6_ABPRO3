@@ -26,21 +26,33 @@
                         </li>
                     </ul>
                     <div id="bienvenida" class="navbar-text ms-auto"></div>
-                    <div>
-                        <a href="#" id="btnCarrito" class="position-relative text-secondary">
-                            <i class="fa-solid fa-cart-shopping fa-2x ms-3 me-2">
-                                
-                            </i>
-                            <span id="contador-carrito" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                              <span>0</span>
-                              <span class="visually-hidden">Productos en carrito</span>
+                    <div class="d-flex align-items-center">
+                        <a type="button" @click="abrirCarrito" id="btnCarrito" class="position-relative text-secondary">
+                            <i class="fa-solid fa-cart-shopping fa-2x ms-3 me-2"></i>
+                            <span v-if="totalItems > 0"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ totalItems > 99 ? '99+' : totalItems }}
                             </span>
                         </a>                      
                     </div>
                 </div>
             </v-container>
         </v-app-bar>
+        <CartOffcanvas ref="cartOffcanvas"/>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useCartStore } from '../stores/CartStore';
+import CartOffcanvas from './CartOffcanvas.vue'
+import { Offcanvas } from 'bootstrap'
+
+const carritoStore = useCartStore()
+const cartOffcanvas = ref(null)
+const totalItems = computed(()=> carritoStore.totalItems)
+
+const abrirCarrito=() => {
+    const offcanvasElement = document.getElementById('offcanvasCarrito')
+    const offcanvas = new Offcanvas(offcanvasElement)
+    offcanvas.show()
+}   
 </script>

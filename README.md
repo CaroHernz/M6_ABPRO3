@@ -32,6 +32,17 @@ src/
 ```
 
 ### 🔧 Instalación y Configuración
+
+#### Prerequisito
+Instalar Proxy API de Productos Locales (El servidor correrá en: http://localhost:3000)
+
+`````
+git clone https://github.com/jlmansilla/proxy-server
+cd proxy-superhero
+npm install
+`````
+#### Instalación
+
 1. Clonar repositorio
    
 ```
