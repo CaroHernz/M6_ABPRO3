@@ -1,37 +1,80 @@
 <h1 align= "center"> Tecno Chile </h1>
 <h2 align= "center"> Adaptación a Vue.js </h2>
 
-## Contexto
-La empresa **Tecno Chile** es una empresa que busca vender sus productos en línea, por lo cual se diseña un prototipo funcional como primera solución.
-Se desarrolla una solución tecnológica que cubre los procesos del negocio.
-
-Este proyecto consiste en la adaptación de una aplicación web tradicional (HTML, CSS y JavaScript) al framework Vue.js, aprovechando sus ventajas en cuanto a componentización, reactividad y organización del código.
+## Descripción
+La empresa **Tecno Chile** es una plataforma de e-commerce moderna desarrollada con Vue.js que permite la venta en línea de productos tecnológicos. Este proyecto representa la migración exitosa de una aplicación web tradicional (HTML, CSS y JavaScript) hacia una arquitectura moderna basada en componentes Vue.js, aprovechando las ventajas de la reactividad, componentización y gestión de estado centralizado.
 	
 ### 🚀 Características del Proyecto
-- **Componentización:** La interfaz se ha dividido en componentes Vue reutilizables
-- **Reactividad:** Implementación del sistema reactivo de Vue para una UI dinámica
-- **Vue Router:** Navegación entre vistas mediante rutas definidas
-- **Composition API:** Uso de la API de composición para una mejor organización del código
-- **Estado centralizado:** Gestión del estado de la aplicación mediante Pinia
+- **Sistema de Compras**
+	- Catálogo de productos con filtrado por categorías y búsqueda
+	- Carrito de compras persistente con offcanvas
+	- Gestión de cantidades (incrementar/decrementar/eliminar)
+	- Cálculo automático de IVA, despacho y totales
+	- Validación de stock en tiempo real
+	- Proceso de checkout simulado
+
+- **Sistema de Autenticación**
+	- Registro e inicio de sesión de usuarios
+	- Persistencia de sesión con localStorage
+	- Interfaz adaptativa (Login/Logout en navbar)
+	- Protección de rutas básica
+	- Datos de usuario en sesión
+
+- **Experiencia de Usuario**
+	- Interfaz responsive con Bootstrap 5.3.7
+	- Iconografía con Font Awesome
+	- Transiciones suaves entre vistas
+	- Notificaciones toast para acciones del usuario
+	- Estados de carga y manejo de errores
 
 ### 📌 Estructura del Proyecto
 
 ```
 src/
-├── components/          # Componentes reutilizables
-│   ├── ProductSection.vue  # Sección de novedades
-│   ├── CardProduct.vue     # Card de producto
-│   ├── AppNavBar.vue       # Barra de navegación
-│   └── AppFooter.vue       # Pie de página
-├── views/               # Vistas/páginas
-│   ├── HomeView.vue     # Página principal
-│   └── ProductPage.vue  # Catálogo de productos
-├── router/              # Configuración de rutas
-│   └── index.js         # Definición de rutas
-└── App.vue              # Componente principal
+├── components/              	# Componentes reutilizables
+│   ├── CardProduct.vue      	# Tarjeta de producto individual
+│   ├── CartOffcanvas.vue 		# Carrito de compras deslizable
+│   ├── AppNavBar.vue          	# Barra de navegación con autenticación
+│   ├── HeroSection.vue     	# Sección hero de la página principal
+│   ├── ProductSection.vue  	# Sección de productos destacados
+│   ├── ServiceSection.vue  	# Sección de servicios
+│   ├── ContactForm.vue     	# Formulario de contacto
+│   ├── SuscriptionSection.vue 	# Sección de suscripción
+│   └── AppFooter.vue       	# Pie de página
+├── views/                  	# Vistas/páginas principales
+│   ├── Inicio.vue        		# Página de inicio
+│   ├── CatalogoPage.vue    	# Catálogo completo de productos
+│   └── LoginPage.vue       	# Página de autenticación
+├── stores/                 	# Gestión de estado con Pinia
+│   ├── CartStore.js        	# Estado del carrito de compras
+│   └── authStore.js        	# Estado de autenticación
+├── router/                 	# Configuración de rutas
+│   └── index.js           		# Definición de rutas y navegación
+└── App.vue                		# Componente raíz de la aplicación
 ```
 
+### 🛠️ Tecnologías Utilizadas
+- **Frontend:** HTML5, CSS, JavaScript (ES Modules)
+- **Control de Versiones:** Git & GitHub
+- **Framework Frontend:** Vue.js 3
+- **Framework CSS:** Bootstrap 5.3.7
+- **Enrutamiento:** Vue Router 4
+- **Gestión de Estado:** Pinia
+- Font Awesome - Iconografía
+
 ### 🔧 Instalación y Configuración
+
+#### Prerequisitos: API de Productos 
+El proyecto requiere una API local para obtener los productos:
+
+`````
+git clone https://github.com/jlmansilla/proxy-server
+cd proxy-superhero
+npm install
+npm start #El servidor correrá en: http://localhost:3000
+`````
+#### Instalación del Proyecto
+
 1. Clonar repositorio
    
 ```
@@ -51,21 +94,70 @@ npm install
 npm run dev
 ```
 
-### 🛠️ Tecnologías Utilizadas
-- **Frontend:** HTML5, CSS, JavaScript (ES Modules)
-- **Control de Versiones:** Git & GitHub
-- **Framework CSS:** Bootstrap 5.3.7
-- Vue 3 - Framework principal
-- Vue Router - Enrutamiento
-- Font Awesome - Iconografía
-  
 ### ⚡ Funcionalidades Implementadas
-1. Visualización de productos - Listado y detalle
-2. Filtrado por categoría - Interfaz para filtrar productos
-3. Conversión de moneda - Precios en CLP y USD
-4. Diseño responsive - Adaptable a diferentes dispositivos
-5. Navegación SPA - Sin recarga de página entre vistas
-   
+**🔐 Autenticación de Usuarios**
+* Formulario de login con validación
+* Persistencia de sesión entre recargas
+* Logout seguro con limpieza de datos
+* Estado visual en navbar según autenticación
+
+**🛒 Sistema de Carrito de Compras**
+* Agregar productos con selección de cantidad
+* Modificar cantidades directamente en el carrito
+* Eliminar productos individualmente
+* Vaciar carrito completamente
+* Cálculo automático de: valor neto, IVA (19%), costo de despacho (5% o gratis sobre $100.000) y Total
+
+**📦 Gestión de Productos**
+* Catálogo dinámico desde API REST
+* Búsqueda en tiempo real por nombre/descripción
+* Filtrado por categorías
+* Indicadores de stock (disponible/agotado)
+* Validación de cantidades según stock disponible
+
+**🎨 Experiencia de Usuario**
+* Interfaz responsive adaptada a móviles y desktop
+* Notificaciones toast para acciones importantes
+* Estados de carga durante peticiones HTTP
+* Manejo de errores con mensajes descriptivos
+* Transiciones suaves entre vistas
+
+#### 👥 Datos de Prueba**
+
+**Credenciales de Acceso**
+
+```
+Correo: usuario@tecnochile.cl
+Contraseña: tecnochile123
+```
+
+**🚦 Flujo de Uso Típico**
+* Navegación inicial: El usuario accede a la página de inicio
+* Autenticación: Click en "Iniciar Sesión" en el navbar
+* Exploración: Navegación al catálogo de productos
+* Selección: Agregar productos al carrito con cantidades específicas
+* Revisión: Visualización del carrito con resumen de compra
+* Finalización: Proceso de checkout simulado
+
+## 🔧 Personalización y Extensión
+El proyecto está estructurado para facilitar extensiones futuras:
+
+* Nuevas vistas: Agregar en /views/ y configurar rutas
+* Componentes: Crear en /components/ para reutilización
+* Store modules: Extender Pinia stores para nueva funcionalidad
+* API integration: Modificar servicios en /services/
+
+
+## 🎯 Objetivos Cumplidos
+	✅ Migración completa a Vue.js 3 con Composition API
+	✅ Sistema de autenticación de usuarios integrado
+	✅ Carrito de compras funcional con persistencia
+	✅ Gestión de estado centralizada con Pinia
+	✅ Routing con Vue Router para SPA
+	✅ Diseño responsive con Bootstrap 5
+	✅ Experiencia de usuario mejorada con transiciones
+
+
 ### Responsables
 <h4 align="center"> 
   <a href="https://github.com/CaroHernz">Carolina Hernández</a> | 
